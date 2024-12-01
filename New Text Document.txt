@@ -1,0 +1,349 @@
+sjf out 
+
+#include <stdio.h>
+
+int main() {
+    int process[] = {1, 2, 3, 4};
+    int burst_time[] = {2, 4, 3, 1};
+    int n = sizeof(process) / sizeof(process[0]);
+    int waiting[n] ,  sum = 0;
+    float avg_waiting;
+
+    // Step 1: Sort the processes based on their burst times (SJF)
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (burst_time[i] > burst_time[j]) {
+                // Swap burst times
+                int temp = burst_time[i];
+                burst_time[i] = burst_time[j];
+                burst_time[j] = temp;
+
+                temp = process[i];
+                process[i] = process[j];
+                process[j] = temp;
+            }
+        }
+    }
+
+    // Step 2: Calculate waiting time for each process
+    waiting[0] = 0;
+    for (int i = 1; i < n; i++) {
+        waiting[i] = waiting[i - 1] + burst_time[i - 1];
+        sum += waiting[i];
+    }
+
+    // Step 3: Calculate the average waiting time
+    avg_waiting = (float)sum / n;
+
+    // Step 4: Display the process details and average waiting time
+    printf("Process\tBurst Time\tWaiting Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t\t%d\n", process[i], burst_time[i], waiting[i]);
+    }
+    printf("Average Waiting Time: %.2f\n", avg_waiting);
+
+    return 0;
+}
+
+--------------------------------
+
+sjf with 
+
+
+#include <stdio.h>
+
+int main() {
+
+    int process[] = {1, 2, 3, 4};
+    int arrival[] = {0, 1, 2, 3};
+    int burst[] = {2, 4, 3, 1};
+    int n = sizeof(process) / sizeof(process[0]) , waiting[n],time = 0,sum = 0;
+
+    // Step 1: Process the tasks using SJF
+    for (int count = 0; count < n; count++) {
+        int min = -1;
+
+        // Find the process with the shortest burst time that has arrived by the current time
+        for (int i = 0; i < n; i++) {
+            if (arrival[i] <= time && (min == -1 || burst[i] < burst[min])) {
+                min = i;  // Select the process with the shortest burst time
+            }
+        }
+
+        // If a process is found, calculate its waiting time and update time
+        if (min != -1) {
+            waiting[min] = time - arrival[min];
+            time += burst[min];
+            sum += waiting[min];
+            burst[min] = 10000;
+        }
+    }
+
+    // Step 2: Calculate the average waiting time
+    float avg_waiting = (float)sum / n;
+
+    // Step 3: Display the process details and average waiting time
+    printf("Process\tArrival Time\tBurst Time\tWaiting Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t\t%d\t\t%d\n", process[i], arrival[i], burst[i], waiting[i]);
+    }
+
+    printf("Average Waiting Time: %.2f\n", avg_waiting);
+
+    return 0;
+}
+---------------------
+fcfs out at
+
+#include <stdio.h>
+
+int main() {
+    int process[] = {1, 2, 3, 4};
+    int burst_time[] = {2, 4, 3, 1};
+    int n = sizeof(process) / sizeof(process[0]);
+    int waiting[n];
+    float sum = 0;
+
+    // First process waiting time is 0
+    waiting[0] = 0;
+
+    // Calculate waiting time for each process
+    for (int i = 1; i < n; i++) {
+        waiting[i] = waiting[i - 1] + burst_time[i - 1];
+        sum += waiting[i];
+    }
+
+    // Display waiting times
+    printf("Process\tBurst Time\tWaiting Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t\t%d\n", process[i], burst_time[i], waiting[i]);
+    }
+
+    // Calculate and display average waiting time
+    float avg_waiting_time = sum / n;
+    printf("Average Waiting Time: %.2f\n", avg_waiting_time);
+
+    return 0;
+}
+------------------
+fcfs with at
+
+
+#include <stdio.h>
+
+int main() {
+    int process[] = {1, 2, 3, 4};
+    int arrival[] = {0, 1, 2, 3};
+    int burst[] = {2, 4, 3, 1};
+    int n = sizeof(process) / sizeof(process[0]);
+    int waiting[n], time = 0, sum = 0;
+    float avg_waiting;
+
+    // Calculating waiting times
+    for (int i = 0; i < n; i++) {
+        if (time < arrival[i])
+        time = arrival[i]; // Wait for the process to arrive
+        waiting[i] = time - arrival[i];
+        time += burst[i];
+        sum += waiting[i];
+    }
+
+    // Display individual waiting times
+    printf("Process\tArrival\tBurst\tWaiting\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t%d\t%d\n", process[i], arrival[i], burst[i], waiting[i]);
+    }
+
+    // Calculate and display average waiting time
+    avg_waiting = (float)sum / n;
+    printf("Average Waiting Time: %.2f\n", avg_waiting);
+
+    return 0;
+}
+---------------
+pry
+
+
+
+#include <stdio.h>
+
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    int bt[n], wt[n], pos, temp, pr[n];
+    float awt = 0;
+
+    printf("Enter burst time and priority for each process:\n");
+    for (int a = 0; a < n; a++) {
+        printf("Process %d burst time: ", a + 1);
+        scanf("%d", &bt[a]);
+        printf("Process %d priority: ", a + 1);
+        scanf("%d", &pr[a]);
+    }
+
+
+    for (int i = 0; i < n; i++) {
+        pos = i;
+        for (int j = i + 1; j < n; j++) {
+            if (pr[j] < pr[pos]) {
+                pos = j;
+            }
+        }
+
+
+        temp = pr[i];
+        pr[i] = pr[pos];
+        pr[pos] = temp;
+
+
+        temp = bt[i];
+        bt[i] = bt[pos];
+        bt[pos] = temp;
+    }
+
+    wt[0] = 0;
+
+
+    for (int i = 1; i < n; i++) {
+        wt[i] = wt[i - 1] + bt[i - 1];
+        awt += wt[i];
+    }
+
+    awt /= n;
+
+    printf("Average Waiting Time: %.2f\n", awt);
+
+    return 0;
+}
+----------------
+//rr
+
+
+
+#include <stdio.h>
+
+int main() {
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    int tq, cnt = 0, time_elapsed = 0;
+    int bt[n], wt[n], rem_bt[n], tat[n];
+    float total_wt = 0, total_tat = 0;
+
+
+    for (int i = 0; i < n; i++) {
+        printf("Process %d burst time: ", i + 1);
+        scanf("%d", &bt[i]);
+        rem_bt[i] = bt[i];
+    }
+
+    printf("Enter the time quantum: ");
+    scanf("%d", &tq);
+
+
+    while (cnt < n) {
+        for (int i = 0; i < n; i++) {
+            if (rem_bt[i] > 0) {
+                int time_spent = (rem_bt[i] > tq) ? tq : rem_bt[i];
+                rem_bt[i] -= time_spent;
+                time_elapsed += time_spent;
+
+
+                if (rem_bt[i] == 0) {
+                    cnt++;
+                    tat[i] = time_elapsed;
+                    wt[i] = tat[i] - bt[i];
+                    total_wt += wt[i];
+                    total_tat += tat[i];
+                }
+            }
+        }
+    }
+
+
+    float avg_wt = total_wt / n;
+    float avg_tat = total_tat / n;
+
+    printf("\nProcess\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t\t%d\t\t%d\t\t%d\n", i + 1, bt[i], wt[i], tat[i]);
+    }
+
+    printf("\nAverage Waiting Time: %.2f", avg_wt);
+    printf("\nAverage Turnaround Time: %.2f\n", avg_tat);
+
+    return 0;
+}
+-------------------
+//f
+
+
+
+
+
+
+
+#include <stdio.h>
+int main() {
+int n;
+printf("Enter number of processes: ");
+scanf("%d", &n);
+int bt[n], wt[n];
+float awt = 0;
+printf("Enter burst time for each process:\n");
+for (int a = 0; a < n; a++) {
+printf("Process %d burst time: ", a + 1);
+scanf("%d", &bt[a]);
+}
+wt[0] = 0;
+for (int i = 1; i < n; i++) {
+wt[i] = wt[i - 1] + bt[i - 1];
+awt += wt[i];
+}
+awt /= n;
+printf("Average Waiting Time: %.2f\n", awt);
+return 0;
+}
+-----------------------
+//s
+
+
+
+#include <stdio.h>
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    int bt[n], wt[n], pos, temp;
+    float awt = 0;
+
+    printf("Enter burst time for each process:\n");
+    for (int a = 0; a < n; a++) {
+        printf("Process %d burst time: ", a + 1);
+        scanf("%d", &bt[a]);
+    }
+
+    for (int i = 0; i < n; i++) {
+        pos = i;
+        for (int j = i + 1; j < n; j++) {
+            if (bt[j] < bt[pos]) {
+                pos = j;
+            }
+        }
+        temp = bt[i];
+        bt[i] = bt[pos];
+        bt[pos] = temp;
+    }
+    wt[0] = 0;
+    for (int i = 1; i < n; i++) {
+        wt[i] = wt[i - 1] + bt[i - 1];
+        awt += wt[i];
+    }
+    awt /= n;  // Calculate average waiting time
+    printf("Average Waiting Time: %.2f\n", awt);
+
+    return 0;
+}
+-------------
